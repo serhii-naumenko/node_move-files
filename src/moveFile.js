@@ -14,6 +14,13 @@ function moveFile(source, destination) {
     return;
   }
 
+  // Ensure source is a file, not a directory
+  if (!fs.lstatSync(sourceSrc).isFile()) {
+    console.error(`Error: Source "${sourceSrc}" is not a file.`);
+
+    return;
+  }
+
   // If destination is a directory, move inside it
   const destLooksLikeDir =
     destination.endsWith(path.sep) || destination.endsWith('/');
@@ -24,17 +31,6 @@ function moveFile(source, destination) {
     destLooksLikeDir
   ) {
     destinationSrc = path.join(destinationSrc, path.basename(sourceSrc));
-  }
-
-  // Ensure destination parent directory exists
-  const destParent = path.dirname(destinationSrc);
-
-  if (!fs.existsSync(destParent)) {
-    console.error(
-      `Error: Destination directory "${destParent}" does not exist.`,
-    );
-
-    return;
   }
 
   // If source and destination are the same, do nothing
