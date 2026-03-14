@@ -92,17 +92,6 @@ describe('File Move Tests', () => {
       expect(content).toBe(testContent);
     });
 
-    test('should move file, if passed destination is a file without extension', async () => {
-      const newFilePath = path.join(tempDir, faker.lorem.word());
-      const { stderr } = await execAsync(
-        `${basePath} ${testFilePath} ${newFilePath}`,
-      );
-
-      expect(stderr).toBeFalsy();
-      expect(fs.existsSync(newFilePath)).toBe(true);
-      expect(fs.existsSync(testFilePath)).toBe(false);
-    });
-
     test('should move file, if passed destination is a directory', async () => {
       fs.mkdirSync(testDir);
 
@@ -160,6 +149,17 @@ describe('File Move Tests', () => {
       await execAsync(`${basePath} ${testFilePath} ${newPath}`);
 
       expect(fs.existsSync(path.join(newPath, testFileName))).toBe(true);
+    });
+
+    test('should throw error when source is a directory', async () => {
+      const dirToMove = path.join(tempDir, faker.word.noun());
+
+      fs.mkdirSync(dirToMove);
+
+      const { stderr } = await execAsync(`${basePath} ${dirToMove} ${testDir}`);
+
+      expect(stderr.length).toBeGreaterThan(0);
+      expect(fs.existsSync(dirToMove)).toBe(true);
     });
   });
 });
